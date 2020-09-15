@@ -18,7 +18,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: calc(5px + 2vmin);
+  font-size: calc(px + 2vmin);
   color: #006a71;
 }
 
@@ -67,12 +67,12 @@
 .table-striped > tbody > tr:nth-child(odd) > th {
   background-color: #a3cfcc;
   padding: 0.2rem;
-  font-size: calc(3px + 2vmin);
+  font-size: calc(1.5px + 2vmin);
 }
 
 .table-striped > tbody > tr:nth-child(even) > td,
 .table-striped > tbody > tr:nth-child(even) > th {
   background-color: #ecf4f3;
   padding: 0.2rem;
-  font-size: calc(3px + 2vmin);
+  font-size: calc(1.5px + 2vmin);
 }

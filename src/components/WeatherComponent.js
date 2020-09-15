@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Fragment } from "react";
 import { Line } from "react-chartjs-2";
 import { Table } from "react-bootstrap";
 import Preloader from "./Preloader";
@@ -6,50 +6,77 @@ import Preloader from "./Preloader";
 function InputLocation({ value, onLocationChanged }) {
   return (
     <form>
-      <label>
-        Select Location:
-        <select value={value} onChange={onLocationChanged}>
-          <option value="12495">Adelaide</option>
-          <option value="9388">Brisbane</option>
-          <option value="3928">Canberra</option>
-          <option value="11">Darwin</option>
-          <option value="15465">Hobart</option>
-          <option value="5594">Melbourne</option>
-          <option value="13896">Perth</option>
-          <option value="624">Sydney</option>
-        </select>
-      </label>
+      <div className="row">
+        <div className="col">
+          <label>
+            Select Location:
+            <select value={value} onChange={onLocationChanged}>
+              <option value="12495">Adelaide</option>
+              <option value="9388">Brisbane</option>
+              <option value="3928">Canberra</option>
+              <option value="11">Darwin</option>
+              <option value="15465">Hobart</option>
+              <option value="5594">Melbourne</option>
+              <option value="13896">Perth</option>
+              <option value="624">Sydney</option>
+            </select>
+          </label>
+        </div>
+      </div>
     </form>
   );
 }
 
 function WeatherDetailRow({ aRow }) {
   const items = [];
+
   let i = 0;
+  let dateValues = [];
+  let timeValues = [];
+  let precisValues = [];
+  let temperatureValues = [];
+  let wind_speedValues = [];
+  let wind_directionValues = [];
   for (let props in aRow) {
-    items.push(
-      <tr key={i++}>
-        <td> {aRow[props].date}</td>
-        <td> {aRow[props].precis}</td>
-        <td>{aRow[props].temperature} </td>
-        <td>{aRow[props].wind_speed} </td>
-        <td>{aRow[props].wind_direction}</td>
-      </tr>
-    );
+    dateValues.push(<td key={i++}>{aRow[props].date}</td>);
+    timeValues.push(<td key={i++}>{aRow[props].time}</td>);
+    precisValues.push(<td key={i++}>{aRow[props].precis}</td>);
+    temperatureValues.push(<td key={i++}>{aRow[props].temperature}</td>);
+    wind_speedValues.push(<td key={i++}>{aRow[props].wind_speed}</td>);
+    wind_directionValues.push(<td key={i++}>{aRow[props].wind_direction}</td>);
   }
+  items.push(
+    <Fragment key={i++}>
+      <tr key={i++}>
+        <th key={i++}>Date</th>
+        {dateValues}
+      </tr>
+      <tr key={i++}>
+        <th key={i++}>Time</th>
+        {timeValues}
+      </tr>
+      <tr key={i++}>
+        <th key={i++}>Precipitation</th>
+        {precisValues}
+      </tr>
+      <tr key={i++}>
+        <th key={i++}>Temperature</th>
+        {temperatureValues}
+      </tr>
+      <tr key={i++}>
+        <th key={i++}>Wind Speed</th>
+        {wind_speedValues}
+      </tr>
+      <tr key={i++}>
+        <th key={i++}>Wind Direction</th>
+        {wind_directionValues}
+      </tr>
+    </Fragment>
+  );
 
   return (
     <div>
       <Table striped bordered hover size="sm">
-        <thead className="thead">
-          <tr>
-            <th>Date and Time</th>
-            <th>Precipitation</th>
-            <th>Temperature</th>
-            <th>Wind Speed</th>
-            <th>Wind Direction</th>
-          </tr>
-        </thead>
         <tbody className="tbody">{items}</tbody>
       </Table>
     </div>
@@ -58,11 +85,15 @@ function WeatherDetailRow({ aRow }) {
 
 function WeatherComponent() {
   const [location, setLocation] = useState("624"); //Sydney
+  const [selectedOption, setSelectedOption] = useState();
+
   const [loadState, setLoadingState] = useState({
     temp: "Loading...",
     loading: true,
   });
   const [weatherDataState, setWeatherDataState] = useState({
+    date: "Loading...",
+    time: "Loading...",
     precis: "Loading...",
     temperature: "Loading ...",
     wind_direction: "Loading...",
@@ -92,14 +123,14 @@ function WeatherComponent() {
       .then(
         (data) => {
           let aRow = [];
-          var options = {
+          var dateOptions = {
             weekday: "short",
             year: "numeric",
             month: "short",
             day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            second: "numeric",
+          };
+          var timeOptions = {
+            timeZoneName: "short",
             timeZone: "Australia/Sydney",
           };
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
@@ -112,9 +143,14 @@ function WeatherComponent() {
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
             (fcast) =>
               aRow.push({
-                date: new Intl.DateTimeFormat("en-AU", options).format(
+                date: new Intl.DateTimeFormat("en-AU", dateOptions).format(
                   new Date(fcast.local_time)
                 ),
+                time: new Date(fcast.local_time).toLocaleTimeString(
+                  "en-AU",
+                  timeOptions
+                ),
+
                 precis: fcast.precis,
                 temperature: fcast.temperature + "°",
                 wind_direction:
@@ -141,18 +177,21 @@ function WeatherComponent() {
 
   useEffect(() => getWeather(), [location]);
   return (
-    <div>
-      <div>
-        <Preloader show={loadState.loading} />
+    <div className="container-fluid">
+      <div className="row">
+        <div className="col">
+          <Preloader show={loadState.loading} />
+
+          <Line data={chartDataState} width={800} />
+          <InputLocation
+            value={location}
+            onLocationChanged={(e) => {
+              setLocation(e.target.value);
+            }}
+          />
+          <WeatherDetailRow aRow={weatherDataState} />
+        </div>
       </div>
-      <Line data={chartDataState} />
-      <InputLocation
-        value={location}
-        onLocationChanged={(e) => {
-          setLocation(e.target.value);
-        }}
-      />
-      <WeatherDetailRow aRow={weatherDataState} />
     </div>
   );
 }
