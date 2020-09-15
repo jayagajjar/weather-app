@@ -25,9 +25,10 @@ function InputLocation({ value, onLocationChanged }) {
 
 function WeatherDetailRow({ aRow }) {
   const items = [];
+  let i = 0;
   for (let props in aRow) {
     items.push(
-      <tr>
+      <tr key={i++}>
         <td> {aRow[props].date}</td>
         <td> {aRow[props].precis}</td>
         <td>{aRow[props].temperature} </td>
@@ -86,7 +87,6 @@ function WeatherComponent() {
     labels = [];
     temps = [];
     let api = `https://ws.weatherzone.com.au/?lt=aploc&lc=${location}&locdet=1&latlon=1&pdf=twc(period=48,detail=2)&u=1&format=json`;
-
     fetch(api)
       .then((res) => res.json())
       .then(
@@ -108,6 +108,7 @@ function WeatherComponent() {
               temps.push(fcast.temperature);
             }
           );
+
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
             (fcast) =>
               aRow.push({
