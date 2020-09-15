@@ -1,4 +1,4 @@
-A Weather App
+## A Weather App
 
 Made in React with BootStrap(for styling the components) and ChartJS(to display temperature in Line chart)
 
@@ -9,7 +9,10 @@ Functional Components and Hooks are used.
 The dropdown has fixed set of Cities [Adelaide, Brisbane, Canberra, Darwin, Hobart, Melbourne, Perth, Sydney]
 The chart and the table with the weather details are updated on selecting a different city.
 
-##Future Upgrade
+![Weather App](public/images/app.png)
+
+## Future Upgrade
+
 ● Componets needs to be in seperate files
 ● The dropdown data can be dynamic
 ● Caching the API responses
