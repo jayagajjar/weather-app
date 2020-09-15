@@ -1,0 +1,78 @@
+.App {
+  text-align: center;
+}
+
+.App-header {
+  background-color: #68b0ab;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  font-size: calc(20px + 2vmin);
+  color: white;
+}
+
+.App-body {
+  background-color: #ecf4f3;
+  min-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(5px + 2vmin);
+  color: #006a71;
+}
+
+.preloader {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+  background: #ecf4f3;
+  transition: all 1s, visibility 1s;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.preloader > div {
+  border: 16px solid #ecf4f3; /* Light grey */
+  border-top: 16px solid #006a71; /* Blue */
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  animation: spin 2s linear infinite;
+}
+.preloader.display {
+  visibility: visible;
+  opacity: 1;
+  transition: tr 1s, visibility 0s;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.thead {
+  color: #006a71;
+}
+.table-striped > tbody > tr:nth-child(odd) > td,
+.table-striped > tbody > tr:nth-child(odd) > th {
+  background-color: #a3cfcc;
+  padding: 0.2rem;
+  font-size: calc(3px + 2vmin);
+}
+
+.table-striped > tbody > tr:nth-child(even) > td,
+.table-striped > tbody > tr:nth-child(even) > th {
+  background-color: #ecf4f3;
+  padding: 0.2rem;
+  font-size: calc(3px + 2vmin);
+}
