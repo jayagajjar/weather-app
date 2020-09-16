@@ -3,7 +3,7 @@ import { Line } from "react-chartjs-2";
 import { Table } from "react-bootstrap";
 import Preloader from "./Preloader";
 
-function InputLocation({ value, onLocationChanged }) {
+function InputLocation({ value, onLocationChanged, onOptionChanged }) {
   return (
     <form>
       <div className="row">
@@ -21,6 +21,36 @@ function InputLocation({ value, onLocationChanged }) {
               <option value="624">Sydney</option>
             </select>
           </label>
+        </div>
+        <div className="col">
+          <label htmlFor="inlineRadio1">Temperature in </label>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="celcius"
+              value="celcius"
+              onChange={onOptionChanged}
+              defaultChecked
+            />
+            <label className="form-check-label" htmlFor="inlineRadio1">
+              Celcius
+            </label>
+          </div>
+          <div className="form-check form-check-inline">
+            <input
+              className="form-check-input"
+              type="radio"
+              name="inlineRadioOptions"
+              id="fahrenheit"
+              value="fahrenheit"
+              onChange={onOptionChanged}
+            />
+            <label className="form-check-label" htmlFor="inlineRadio2">
+              Fahrenheit
+            </label>
+          </div>
         </div>
       </div>
     </form>
@@ -85,7 +115,7 @@ function WeatherDetailRow({ aRow }) {
 
 function WeatherComponent() {
   const [location, setLocation] = useState("624"); //Sydney
-  const [selectedOption, setSelectedOption] = useState();
+  const [selectedOption, setSelectedOption] = useState("celcius");
 
   const [loadState, setLoadingState] = useState({
     temp: "Loading...",
@@ -133,10 +163,20 @@ function WeatherComponent() {
             timeZoneName: "short",
             timeZone: "Australia/Sydney",
           };
+          let timeOptionsChart = {};
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
             (fcast) => {
-              labels.push(new Date(fcast.local_time).getHours());
-              temps.push(fcast.temperature);
+              labels.push(
+                new Date(fcast.local_time).toLocaleTimeString(
+                  "en-AU",
+                  timeOptionsChart
+                )
+              );
+              temps.push(
+                selectedOption === "fahrenheit"
+                  ? fcast.temperature * (9 / 5) + 32
+                  : fcast.temperature
+              );
             }
           );
 
@@ -150,9 +190,12 @@ function WeatherComponent() {
                   "en-AU",
                   timeOptions
                 ),
-
                 precis: fcast.precis,
-                temperature: fcast.temperature + "°",
+                temperature:
+                  selectedOption === "fahrenheit"
+                    ? Math.round(fcast.temperature * (9 / 5) + 32 * 10) / 10 +
+                      "°"
+                    : Math.round(fcast.temperature * 10) / 10 + "°",
                 wind_direction:
                   fcast.wind_direction + " " + fcast.wind_direction_compass,
                 wind_speed: fcast.wind_speed,
@@ -164,6 +207,10 @@ function WeatherComponent() {
           });
           chartDataState.labels = labels;
           chartDataState.datasets[0].data = temps;
+          chartDataState.datasets[0].label =
+            "Temperature in " +
+            selectedOption.charAt(0).toUpperCase() +
+            selectedOption.slice(1);
 
           setLoadingState(() => {
             return { temp: temp, loading: false };
@@ -175,7 +222,7 @@ function WeatherComponent() {
       );
   };
 
-  useEffect(() => getWeather(), [location]);
+  useEffect(() => getWeather(), [location, selectedOption]);
   return (
     <div className="container-fluid">
       <div className="row">
@@ -187,6 +234,9 @@ function WeatherComponent() {
             value={location}
             onLocationChanged={(e) => {
               setLocation(e.target.value);
+            }}
+            onOptionChanged={(e) => {
+              setSelectedOption(e.target.value);
             }}
           />
           <WeatherDetailRow aRow={weatherDataState} />
