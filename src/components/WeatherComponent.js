@@ -3,7 +3,12 @@ import { Line } from "react-chartjs-2";
 import { Table } from "react-bootstrap";
 import Preloader from "./Preloader";
 
-function InputLocation({ value, onLocationChanged, onOptionChanged }) {
+function InputLocation({
+  value,
+  onLocationChanged,
+  onOptionChanged,
+  onWindSpeedChanged,
+}) {
   return (
     <form>
       <div className="row">
@@ -23,33 +28,67 @@ function InputLocation({ value, onLocationChanged, onOptionChanged }) {
           </label>
         </div>
         <div className="col">
-          <label htmlFor="inlineRadio1">Temperature in </label>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="inlineRadioOptions"
-              id="celcius"
-              value="celcius"
-              onChange={onOptionChanged}
-              defaultChecked
-            />
-            <label className="form-check-label" htmlFor="inlineRadio1">
-              Celcius
-            </label>
+          <div className="form-group">
+            <label htmlFor="inlineRadio">Temperature in </label>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input1"
+                type="radio"
+                name="inlineRadioOptions"
+                id="celcius"
+                value="celcius"
+                onChange={onOptionChanged}
+                defaultChecked
+              />
+              <label className="form-check-label" htmlFor="inlineRadio">
+                Celcius
+              </label>
+            </div>
+            <div className="form-check form-check-inline">
+              <input
+                className="form-check-input1"
+                type="radio"
+                name="inlineRadioOptions"
+                id="fahrenheit"
+                value="fahrenheit"
+                onChange={onOptionChanged}
+              />
+              <label className="form-check-label" htmlFor="inlineRadio">
+                Fahrenheit
+              </label>
+            </div>
           </div>
-          <div className="form-check form-check-inline">
-            <input
-              className="form-check-input"
-              type="radio"
-              name="inlineRadioOptions"
-              id="fahrenheit"
-              value="fahrenheit"
-              onChange={onOptionChanged}
-            />
-            <label className="form-check-label" htmlFor="inlineRadio2">
-              Fahrenheit
-            </label>
+        </div>
+        <div className="col">
+          <div className="form-group1">
+            <label htmlFor="inlineRadio1">Wind Speed in </label>
+            <div className="form-check1 form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="inlineRadioOptions1"
+                id="km/h"
+                value="km/h"
+                onChange={onWindSpeedChanged}
+                defaultChecked
+              />
+              <label className="form-check-label" htmlFor="inlineRadio1">
+                km/h
+              </label>
+            </div>
+            <div className="form-check1 form-check-inline">
+              <input
+                className="form-check-input"
+                type="radio"
+                name="inlineRadioOptions1"
+                id="knot"
+                value="knot"
+                onChange={onWindSpeedChanged}
+              />
+              <label className="form-check-label" htmlFor="inlineRadio">
+                knot
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -102,7 +141,7 @@ function WeatherDetailRow({ aRow }) {
 function WeatherComponent() {
   const [location, setLocation] = useState("624"); //Sydney
   const [selectedOption, setSelectedOption] = useState("celcius");
-
+  const [selectedWindSpeed, setSelectedWindSpeed] = useState("km/h");
   const [loadState, setLoadingState] = useState({
     temp: "Loading...",
     loading: true,
@@ -167,7 +206,6 @@ function WeatherComponent() {
               );
             }
           );
-
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
             (fcast) =>
               aRow.push({
@@ -181,12 +219,15 @@ function WeatherComponent() {
                 precis: fcast.precis,
                 temperature:
                   selectedOption === "fahrenheit"
-                    ? Math.round(fcast.temperature * (9 / 5) + 32 * 10) / 10 +
+                    ? Math.round((fcast.temperature * (9 / 5) + 32) * 10) / 10 +
                       "°"
                     : Math.round(fcast.temperature * 10) / 10 + "°",
                 wind_direction:
                   fcast.wind_direction + " " + fcast.wind_direction_compass,
-                wind_speed: fcast.wind_speed,
+                wind_speed:
+                  selectedWindSpeed === "knot"
+                    ? Math.round(fcast.wind_speed * 1.852 * 10) / 10
+                    : fcast.wind_speed,
               })
           );
           let temp;
@@ -209,8 +250,7 @@ function WeatherComponent() {
         }
       );
   };
-
-  useEffect(() => getWeather(), [location, selectedOption]);
+  useEffect(() => getWeather(), [location, selectedOption, selectedWindSpeed]);
   return (
     <div className="container-fluid">
       <div className="row">
@@ -225,6 +265,9 @@ function WeatherComponent() {
             }}
             onOptionChanged={(e) => {
               setSelectedOption(e.target.value);
+            }}
+            onWindSpeedChanged={(e) => {
+              setSelectedWindSpeed(e.target.value);
             }}
           />
           <WeatherDetailRow aRow={weatherDataState} />
