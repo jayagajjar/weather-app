@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Fragment } from "react";
+import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Table } from "react-bootstrap";
 import Preloader from "./Preloader";
@@ -58,56 +58,42 @@ function InputLocation({ value, onLocationChanged, onOptionChanged }) {
 }
 
 function WeatherDetailRow({ aRow }) {
-  const items = [];
-
-  let i = 0;
   let dateValues = [];
   let timeValues = [];
   let precisValues = [];
   let temperatureValues = [];
   let wind_speedValues = [];
   let wind_directionValues = [];
-  for (let props in aRow) {
-    dateValues.push(<td key={i++}>{aRow[props].date}</td>);
-    timeValues.push(<td key={i++}>{aRow[props].time}</td>);
-    precisValues.push(<td key={i++}>{aRow[props].precis}</td>);
-    temperatureValues.push(<td key={i++}>{aRow[props].temperature}</td>);
-    wind_speedValues.push(<td key={i++}>{aRow[props].wind_speed}</td>);
-    wind_directionValues.push(<td key={i++}>{aRow[props].wind_direction}</td>);
-  }
-  items.push(
-    <Fragment key={i++}>
-      <tr key={i++}>
-        <th key={i++}>Date</th>
-        {dateValues}
-      </tr>
-      <tr key={i++}>
-        <th key={i++}>Time</th>
-        {timeValues}
-      </tr>
-      <tr key={i++}>
-        <th key={i++}>Precipitation</th>
-        {precisValues}
-      </tr>
-      <tr key={i++}>
-        <th key={i++}>Temperature</th>
-        {temperatureValues}
-      </tr>
-      <tr key={i++}>
-        <th key={i++}>Wind Speed</th>
-        {wind_speedValues}
-      </tr>
-      <tr key={i++}>
-        <th key={i++}>Wind Direction</th>
-        {wind_directionValues}
-      </tr>
-    </Fragment>
-  );
+
+  let rowDetails = [
+    { header: "Date", values: dateValues },
+    { header: "Time", values: timeValues },
+    { header: "Precipitation", values: precisValues },
+    { header: "Temperature", values: temperatureValues },
+    { header: "Wind Speed", values: wind_speedValues },
+    { header: "Wind Direction", values: wind_directionValues },
+  ];
+
+  aRow.map((props, key) => {
+    dateValues.push(<td key={key}>{props.date}</td>);
+    timeValues.push(<td key={key}>{props.time}</td>);
+    precisValues.push(<td key={key}>{props.precis}</td>);
+    temperatureValues.push(<td key={key}>{props.temperature}</td>);
+    wind_speedValues.push(<td key={key}>{props.wind_speed}</td>);
+    wind_directionValues.push(<td key={key}>{props.wind_direction}</td>);
+  });
 
   return (
     <div>
       <Table striped bordered hover size="sm">
-        <tbody className="tbody">{items}</tbody>
+        <tbody className="tbody">
+          {rowDetails.map((aRow, key) => (
+            <tr key={key}>
+              <th key={key}>{aRow.header}</th>
+              {aRow.values}
+            </tr>
+          ))}
+        </tbody>
       </Table>
     </div>
   );
@@ -121,14 +107,16 @@ function WeatherComponent() {
     temp: "Loading...",
     loading: true,
   });
-  const [weatherDataState, setWeatherDataState] = useState({
-    date: "Loading...",
-    time: "Loading...",
-    precis: "Loading...",
-    temperature: "Loading ...",
-    wind_direction: "Loading...",
-    wind_speed: "Loading...",
-  });
+  const [weatherDataState, setWeatherDataState] = useState([
+    {
+      date: "Loading...",
+      time: "Loading...",
+      precis: "Loading...",
+      temperature: "Loading ...",
+      wind_direction: "Loading...",
+      wind_speed: "Loading...",
+    },
+  ]);
   const [chartDataState] = useState({
     labels: [],
     datasets: [
