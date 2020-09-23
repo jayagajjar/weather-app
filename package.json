@@ -19,6 +19,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:prod": "react-scripts start",
     "build": "react-scripts build",
     "heroku-postbuild": "npm run build",
     "test": "react-scripts test",
