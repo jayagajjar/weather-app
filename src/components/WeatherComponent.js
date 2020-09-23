@@ -206,11 +206,13 @@ function WeatherComponent() {
               );
             }
           );
+
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
             (fcast) =>
               aRow.push({
-                date: new Intl.DateTimeFormat("en-AU", dateOptions).format(
-                  new Date(fcast.local_time)
+                date: new Date(fcast.local_time).toLocaleDateString(
+                  "en-AU",
+                  dateOptions
                 ),
                 time: new Date(fcast.local_time).toLocaleTimeString(
                   "en-AU",
@@ -231,6 +233,7 @@ function WeatherComponent() {
               })
           );
           let temp;
+
           setWeatherDataState(() => {
             return aRow;
           });
