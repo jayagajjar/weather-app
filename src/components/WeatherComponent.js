@@ -206,7 +206,10 @@ function WeatherComponent() {
               );
             }
           );
-
+          /* working in chorme but not in safari 
+            date: new Intl.DateTimeFormat("en-AU", dateOptions).format(
+new Date(fcast.local_time)
+), */
           data.countries[0].locations[0].part_day_forecasts.forecasts.map(
             (fcast) =>
               aRow.push({
@@ -257,10 +260,16 @@ function WeatherComponent() {
   return (
     <div className="container-fluid">
       <div className="row">
+        <div className="col App-header">Weatherzone</div>
+        <Preloader show={loadState.loading} />
+      </div>
+      <div className="row">
         <div className="col">
-          <Preloader show={loadState.loading} />
-
           <Line data={chartDataState} width={800} />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
           <InputLocation
             value={location}
             onLocationChanged={(e) => {
@@ -273,6 +282,10 @@ function WeatherComponent() {
               setSelectedWindSpeed(e.target.value);
             }}
           />
+        </div>
+      </div>
+      <div className="row">
+        <div className="col">
           <WeatherDetailRow aRow={weatherDataState} />
         </div>
       </div>

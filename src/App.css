@@ -11,9 +11,8 @@
   color: white;
 }
 
-.App-body {
+body {
   background-color: #ecf4f3;
-  min-height: 90vh;
   display: flex;
   flex-direction: column;
   align-items: center;
